@@ -35,4 +35,14 @@ public class DBConfig {
     }
 
 
+    @Bean(name = "cpr")
+    @ConfigurationProperties(prefix = "spring.datasource.cpr")
+    public DataSource dataSource3() {
+        return  DataSourceBuilder.create().build();
+    }
+
+    @Bean(name = "cprJdbcTemplate")
+    public JdbcTemplate cprJdbcTemplate(@Qualifier("cpr") DataSource ds) {
+        return new JdbcTemplate(ds);
+    }
 }
