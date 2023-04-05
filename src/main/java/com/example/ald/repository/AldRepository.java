@@ -1,17 +1,12 @@
 package com.example.ald.repository;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
-import com.example.ald.entities.Fund;
 import com.example.ald.entities.GridCollDefinition;
 import com.example.ald.rowmapper.CollDeffMapper;
-import com.example.ald.rowmapper.FundRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.GetMapping;
-
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
