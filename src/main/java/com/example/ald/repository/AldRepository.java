@@ -1,6 +1,8 @@
 package com.example.ald.repository;
 
 import com.example.ald.entities.GridCollDefinition;
+import com.example.ald.entities.ald.Borrower;
+import com.example.ald.rowmapper.BorrowerRowMapper;
 import com.example.ald.rowmapper.CollDeffMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -20,22 +21,23 @@ public class AldRepository {
     @Qualifier("aldJdbcTemplate")
     private JdbcTemplate aldJdbcTemplate;
 
-    public List<GridCollDefinition> getCollDeffData(ArrayList<Integer> collDefArray){
-       String sql = "select * from SDSHIRODKAR.ALD_GRID_COL_DEFS WHERE COL_DEF_FIELD_ID IN (";
-        for(int i =0;i<collDefArray.size()-1;i++){
-            sql = sql + collDefArray.get(i) + ",";
-        }
-        sql = sql + collDefArray.get(collDefArray.size()-1) + ")";
 
 
-        List<GridCollDefinition> collDeffData = aldJdbcTemplate.query(sql, new CollDeffMapper());
+
+    //Column Definition
+    public List<GridCollDefinition> getCollDeffData(String collDefFieldIds){
+
+        StringBuilder sbsql= new StringBuilder("select * from SDSHIRODKAR.ALD_GRID_COL_DEFS WHERE COL_DEF_FIELD_ID IN (");
+        sbsql.append(collDefFieldIds+")");
+        List<GridCollDefinition> collDeffData = aldJdbcTemplate.query(sbsql.toString(), new CollDeffMapper());
         System.out.println(collDeffData);
         return collDeffData;
 
     }
 
+
     public String getCollDefFieldIds(){
-        String sql = "SELECT COL_DEF_FIELD_ID FROM SDSHIRODKAR.LE_COL_DEF_MAPPING WHERE ORG_ID = 22";
+        String sql = "SELECT COL_DEF_FIELD_ID FROM SDSHIRODKAR.LE_COL_DEF_MAPPING WHERE ORG_ID = 23";
         String colDeffFields = aldJdbcTemplate.query(sql, new RowMapper<String>() {
                     @Override
                     public String mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -48,9 +50,43 @@ public class AldRepository {
 
     }
 
-//    public void testDB() {
-//        String sql = "Select BORROWER_LEGAL_ENTITY_ID from ALD_PL_APPROVAL where LENDER_LEGAL_ENTITY_ID = 51";
-//        System.out.println(aldJdbcTemplate.query(sql,new FundRowMapper()));
-//    }
+    // Passing empty value for COL_DEF_FIELD_ID to set default values
+    public void insertCollDeffData() {
+        Integer orgId = 5;
+        String sql = "INSERT INTO SDSHIRODKAR.LE_COL_DEF_MAPPING (ORG_ID, COL_DEF_FIELD_ID) VALUES("+orgId+", '')" ;
+        aldJdbcTemplate.update(sql);
+    }
+
+    // Getting all LegalEntity Ids for a org
+    public  List<Integer> getAllLeIdsForOrg(Integer orgId) {
+        String sql = "SELECT LEGAL_ENTITY_ID  FROM LEGAL_ENTITY  WHERE  ORG_ID = "+orgId;
+        List<Integer> AllLEList = aldJdbcTemplate.query(sql, new RowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getInt("LEGAL_ENTITY_ID");
+            }
+        });
+        return AllLEList;
+    }
+
+    public List<Borrower> getAldFundDataforLenderLE(Integer legalEntityId) {
+        String sql = "SELECT a.BORROWER_LEGAL_ENTITY_ID, a.BORROWER_TAX_ID, a.PL_TAX_ID, a.PL_COUNTRY_CD, a.PL_NET_ASSET_VALUE, " +
+                "a.PL_LENDABLE_ASSETS, c.CLASSIFICATION_DESC,a.APPROVAL_STATUS_CD, a.APPROVAL_DT, a.ENTRY_POST_DTTME " +
+                "FROM ALD_PL_APPROVAL a INNER JOIN CLASSIFICATION c ON a.PL_CLASSIFICATION_CD = c.CLASSIFICATION_CD " +
+                "WHERE a.LENDER_LEGAL_ENTITY_ID = "+legalEntityId+" AND a.PL_CLASSIFICATION_CD IS NOT NULL";
+        List<Borrower> aldDataforLenderLE = aldJdbcTemplate.query(sql,new BorrowerRowMapper());
+        return aldDataforLenderLE;
+    }
+
+    public List<Borrower> getAldFundDataforBorrowerLE(Integer legalEntityId) {
+        String sql = "SELECT a.LENDER_LEGAL_ENTITY_ID, a.LENDER_TAX_ID, a.PL_TAX_ID, a.PL_COUNTRY_CD, a.PL_NET_ASSET_VALUE, " +
+                "a.PL_LENDABLE_ASSETS, c.CLASSIFICATION_DESC,a.APPROVAL_STATUS_CD, a.APPROVAL_DT, a.ENTRY_POST_DTTME " +
+                "FROM ALD_PL_APPROVAL a INNER JOIN CLASSIFICATION c ON a.PL_CLASSIFICATION_CD = c.CLASSIFICATION_CD " +
+                "WHERE a.BORROWER_LEGAL_ENTITY_ID = "+legalEntityId+" AND a.PL_CLASSIFICATION_CD IS NOT NULL";
+        List<Borrower> aldDataforLE = aldJdbcTemplate.query(sql,new BorrowerRowMapper());
+        return aldDataforLE;
+    }
+
+
 
 }

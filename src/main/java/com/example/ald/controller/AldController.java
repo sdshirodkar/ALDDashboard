@@ -1,36 +1,39 @@
 package com.example.ald.controller;
 
 import com.example.ald.entities.GridCollDefinition;
-import com.example.ald.repository.AldRepository;
+import com.example.ald.entities.RestResponse;
+import com.example.ald.entities.ald.Borrower;
+import com.example.ald.service.AldService;
+import com.example.ald.service.LenderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class AldController {
 
     @Autowired
-   private AldRepository aldRepository;
+   private AldService aldService;
+
+    @Autowired
+    private LenderService lenderService;
 
     @GetMapping("/ald/collDefinition")
-    private List<GridCollDefinition> getCollDefinition(){
-        String collDefFieldIds= aldRepository.getCollDefFieldIds();
-        return aldRepository.getCollDeffData(getDataFromString(collDefFieldIds));
+    private ResponseEntity<List<GridCollDefinition>> getCollDefinition(){
+
+        return new ResponseEntity<>(aldService.getCollDefFromRepo(),HttpStatus.OK);
     }
 
-    public ArrayList<Integer> getDataFromString(String str){
-        ArrayList<Integer> finalData = new ArrayList();
-        for(int i =0;i<str.length();i++){
-            char ch = str.charAt(i);
-            if(ch!=','){
-                int data = ch - '0';
-                finalData.add(data);
-            }
-        }
-        return finalData;
+    @GetMapping("ald/lender/{orgId}")
+    public ResponseEntity<List<RestResponse<Borrower>>> fetchData(@PathVariable Integer orgId){
+        return new ResponseEntity<>(lenderService.fetchDataFromALDForLender(orgId), HttpStatus.OK);
     }
+
+
 
 }
