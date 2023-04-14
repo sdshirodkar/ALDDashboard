@@ -16,26 +16,31 @@ public class LenderService {
     private AldRepository aldRepository;
 
     //Getting data for LenderLegalEntityID from ald
-    public List<Borrower> getAldFundInfoForLenderLEID(Integer legalEntityId){
+    public List<RestResponse<Borrower>> getAldFundInfoForLenderLEID(Integer legalEntityId){
 
         List<Borrower> aldFundDataforLenderLE = aldRepository.getAldFundDataforLenderLE(legalEntityId);
+        List<RestResponse<Borrower>> responseDataBorrower = new ArrayList<>();
 
-        return aldFundDataforLenderLE;
+        for(Borrower borrower: aldFundDataforLenderLE){
+            Integer legalEntityID = borrower.getBorrowerLegalEntityId();
+            String borrowerName = aldRepository.getOrgNameForLEID(legalEntityID);
+            borrower.setBorrowerName(borrowerName.substring(1,borrowerName.length()-1));
+
+            RestResponse<Borrower> responseModel = new RestResponse<>(borrower);
+            responseDataBorrower.add(responseModel);
+        }
+        return responseDataBorrower;
 
     }
 
     public List<RestResponse<Borrower>> fetchDataFromALDForLender(Integer orgId){
         List<Integer> AllLEIDs = getLEIDsForOrg(orgId);
         List<Borrower> OrgData = new ArrayList<>();
+        List<RestResponse<Borrower>> responseDataList = new ArrayList<>();
         for(int i : AllLEIDs){
             System.out.println("Getting Data for legal entity Id "+i);
-            List<Borrower> LEData = getAldFundInfoForLenderLEID(i);
-            OrgData.addAll(LEData);
-        }
-        List<RestResponse<Borrower>> responseDataList = new ArrayList<>();
-        for(Borrower borrower : OrgData){
-            RestResponse<Borrower> responseModel= new RestResponse<>(borrower);
-            responseDataList.add(responseModel);
+            List<RestResponse<Borrower>> LEData = getAldFundInfoForLenderLEID(i);
+            responseDataList.addAll(LEData);
         }
         return responseDataList;
 

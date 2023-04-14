@@ -5,6 +5,8 @@ public class GridCollDefinition {
   private String Field_Name;
   private String Header_Name;
   private String ChartDataType;
+
+  private String Filter;
   private String CellRenderer;
   private String Sort;
   private String AggFunc;
@@ -13,6 +15,13 @@ public class GridCollDefinition {
   private String CellEditorPopup;
   private String CellEditorParams;
 
+  public String getFilter() {
+    return Filter;
+  }
+
+  public void setFilter(String filter) {
+    Filter = filter;
+  }
 
   public Integer getField_Id() {
     return Field_Id;

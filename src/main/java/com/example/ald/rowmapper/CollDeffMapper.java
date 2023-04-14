@@ -22,6 +22,7 @@ public class CollDeffMapper implements RowMapper {
         gridCollDefinition.setCellEditor(rs.getString("CELL_EDITOR"));
         gridCollDefinition.setCellEditorPopup(rs.getString("CELL_EDITOR_POPUP"));
         gridCollDefinition.setCellEditorParams(rs.getString("CELL_EDITOR_PARAMS"));
+        gridCollDefinition.setFilter(rs.getString("filter"));
         return gridCollDefinition;
     }
 }

@@ -25,13 +25,16 @@ public class AldController {
 
     @GetMapping("/ald/collDefinition")
     private ResponseEntity<List<GridCollDefinition>> getCollDefinition(){
-
-        return new ResponseEntity<>(aldService.getCollDefFromRepo(),HttpStatus.OK);
+        return new ResponseEntity<>(
+                aldService.getCollDefFromRepo(),
+                HttpStatus.OK);
     }
 
     @GetMapping("ald/lender/{orgId}")
     public ResponseEntity<List<RestResponse<Borrower>>> fetchData(@PathVariable Integer orgId){
-        return new ResponseEntity<>(lenderService.fetchDataFromALDForLender(orgId), HttpStatus.OK);
+        return new ResponseEntity<List<RestResponse<Borrower>>>(
+                lenderService.fetchDataFromALDForLender(orgId),
+                HttpStatus.OK);
     }
 
 

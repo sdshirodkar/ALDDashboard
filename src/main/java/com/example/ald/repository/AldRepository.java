@@ -14,14 +14,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+
 @Repository
 public class AldRepository {
 
     @Autowired
     @Qualifier("aldJdbcTemplate")
     private JdbcTemplate aldJdbcTemplate;
-
-
 
 
     //Column Definition
@@ -34,7 +33,6 @@ public class AldRepository {
         return collDeffData;
 
     }
-
 
     public String getCollDefFieldIds(){
         String sql = "SELECT COL_DEF_FIELD_ID FROM SDSHIRODKAR.LE_COL_DEF_MAPPING WHERE ORG_ID = 23";
@@ -88,5 +86,19 @@ public class AldRepository {
     }
 
 
+    public String getOrgNameForLEID(Integer legalEntityID) {
+        String sql = "SELECT o.ORG_NAME FROM ORGANIZATION o JOIN LEGAL_ENTITY le ON o.ORG_ID = le.ORG_ID " +
+                "WHERE le.LEGAL_ENTITY_ID = "+legalEntityID;
 
+        String orgName = aldJdbcTemplate.query(sql,new RowMapper<String>(){
+
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString("ORG_NAME");
+            }
+        }).toString();
+
+        return orgName;
+
+    }
 }
