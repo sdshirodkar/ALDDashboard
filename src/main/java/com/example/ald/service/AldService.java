@@ -26,4 +26,12 @@ public class AldService {
 
 
 
+    public List<Integer> getLEIDsForOrg(Integer orgId){
+        //Getting all legalentityIds for Org
+        List<Integer> AllLEIDSList = aldRepository.getAllLeIdsForOrg(orgId);
+
+        return AllLEIDSList;
+    }
+
+
 }

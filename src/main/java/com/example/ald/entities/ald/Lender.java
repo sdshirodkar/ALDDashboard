@@ -3,7 +3,7 @@ package com.example.ald.entities.ald;
 public class Lender {
 
     private Integer LenderLegalEntityId;
-    private Integer LenderTaxId;
+    private String LenderTaxId;
     private String LenderName;
 
     private Fund fund;
@@ -16,11 +16,11 @@ public class Lender {
         LenderLegalEntityId = lenderLegalEntityId;
     }
 
-    public Integer getLenderTaxId() {
+    public String getLenderTaxId() {
         return LenderTaxId;
     }
 
-    public void setLenderTaxId(Integer lenderTaxId) {
+    public void setLenderTaxId(String lenderTaxId) {
         LenderTaxId = lenderTaxId;
     }
 

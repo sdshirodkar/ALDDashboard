@@ -31,9 +31,9 @@ public class AldController {
     }
 
     @GetMapping("ald/lender/{orgId}")
-    public ResponseEntity<List<RestResponse<Borrower>>> fetchData(@PathVariable Integer orgId){
-        return new ResponseEntity<List<RestResponse<Borrower>>>(
-                lenderService.fetchDataFromALDForLender(orgId),
+    public ResponseEntity<List<RestResponse<Borrower>>> fetchDataForLender(@PathVariable Integer orgId){
+        return new ResponseEntity<>(
+                lenderService.fetchData(orgId),
                 HttpStatus.OK);
     }
 

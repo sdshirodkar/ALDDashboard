@@ -2,8 +2,10 @@ package com.example.ald.repository;
 
 import com.example.ald.entities.GridCollDefinition;
 import com.example.ald.entities.ald.Borrower;
+import com.example.ald.entities.ald.Lender;
 import com.example.ald.rowmapper.BorrowerRowMapper;
 import com.example.ald.rowmapper.CollDeffMapper;
+import com.example.ald.rowmapper.LenderRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -76,22 +78,19 @@ public class AldRepository {
         return aldDataforLenderLE;
     }
 
-    public List<Borrower> getAldFundDataforBorrowerLE(Integer legalEntityId) {
+    public List<Lender> getAldFundDataforBorrowerLE(Integer legalEntityId) {
         String sql = "SELECT a.LENDER_LEGAL_ENTITY_ID, a.LENDER_TAX_ID, a.PL_TAX_ID, a.PL_COUNTRY_CD, a.PL_NET_ASSET_VALUE, " +
                 "a.PL_LENDABLE_ASSETS, c.CLASSIFICATION_DESC,a.APPROVAL_STATUS_CD, a.APPROVAL_DT, a.ENTRY_POST_DTTME " +
                 "FROM ALD_PL_APPROVAL a INNER JOIN CLASSIFICATION c ON a.PL_CLASSIFICATION_CD = c.CLASSIFICATION_CD " +
                 "WHERE a.BORROWER_LEGAL_ENTITY_ID = "+legalEntityId+" AND a.PL_CLASSIFICATION_CD IS NOT NULL";
-        List<Borrower> aldDataforLE = aldJdbcTemplate.query(sql,new BorrowerRowMapper());
-        return aldDataforLE;
+        List<Lender> aldDataforBorrowerLE = aldJdbcTemplate.query(sql,new LenderRowMapper());
+        return aldDataforBorrowerLE;
     }
-
 
     public String getOrgNameForLEID(Integer legalEntityID) {
         String sql = "SELECT o.ORG_NAME FROM ORGANIZATION o JOIN LEGAL_ENTITY le ON o.ORG_ID = le.ORG_ID " +
                 "WHERE le.LEGAL_ENTITY_ID = "+legalEntityID;
-
         String orgName = aldJdbcTemplate.query(sql,new RowMapper<String>(){
-
             @Override
             public String mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return rs.getString("ORG_NAME");

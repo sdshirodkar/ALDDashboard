@@ -4,6 +4,7 @@ public class RestResponse<T> {
 
     private T value;
 
+
     public RestResponse(T value) {
         this.value = value;
     }

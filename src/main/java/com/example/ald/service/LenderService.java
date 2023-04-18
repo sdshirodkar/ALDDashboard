@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -15,28 +16,15 @@ public class LenderService {
     @Autowired
     private AldRepository aldRepository;
 
-    //Getting data for LenderLegalEntityID from ald
-    public List<RestResponse<Borrower>> getAldFundInfoForLenderLEID(Integer legalEntityId){
+    @Autowired
+    private AldService aldService;
+    private final HashMap<Integer,String> borrowerOrgMapping = new HashMap<>();
 
-        List<Borrower> aldFundDataforLenderLE = aldRepository.getAldFundDataforLenderLE(legalEntityId);
-        List<RestResponse<Borrower>> responseDataBorrower = new ArrayList<>();
+    public List<RestResponse<Borrower>> fetchData(Integer orgId){
+        List<Integer> AllLEIDs = aldService.getLEIDsForOrg(orgId);
 
-        for(Borrower borrower: aldFundDataforLenderLE){
-            Integer legalEntityID = borrower.getBorrowerLegalEntityId();
-            String borrowerName = aldRepository.getOrgNameForLEID(legalEntityID);
-            borrower.setBorrowerName(borrowerName.substring(1,borrowerName.length()-1));
-
-            RestResponse<Borrower> responseModel = new RestResponse<>(borrower);
-            responseDataBorrower.add(responseModel);
-        }
-        return responseDataBorrower;
-
-    }
-
-    public List<RestResponse<Borrower>> fetchDataFromALDForLender(Integer orgId){
-        List<Integer> AllLEIDs = getLEIDsForOrg(orgId);
-        List<Borrower> OrgData = new ArrayList<>();
         List<RestResponse<Borrower>> responseDataList = new ArrayList<>();
+
         for(int i : AllLEIDs){
             System.out.println("Getting Data for legal entity Id "+i);
             List<RestResponse<Borrower>> LEData = getAldFundInfoForLenderLEID(i);
@@ -45,11 +33,35 @@ public class LenderService {
         return responseDataList;
 
     }
-    public List<Integer> getLEIDsForOrg(Integer orgId){
 
-       List<Integer> AllLEIDSList = aldRepository.getAllLeIdsForOrg(orgId);
-       return AllLEIDSList;
+    //Getting data for LenderLegalEntityID from ald
+    public List<RestResponse<Borrower>> getAldFundInfoForLenderLEID(Integer legalEntityId){
+
+        List<Borrower> aldFundDataforLenderLE = aldRepository.getAldFundDataforLenderLE(legalEntityId);
+        List<RestResponse<Borrower>> responseDataBorrower = new ArrayList<>();
+
+        for(Borrower borrower: aldFundDataforLenderLE){
+            Integer borrowerLegalEntityId  = borrower.getBorrowerLegalEntityId();
+            String borrowerName;
+
+            if (borrowerOrgMapping.containsKey(borrowerLegalEntityId)){
+                borrowerName = borrowerOrgMapping.get(borrowerLegalEntityId);
+            }else{
+                borrowerName = aldRepository.getOrgNameForLEID(borrowerLegalEntityId);
+                borrowerOrgMapping.put(borrowerLegalEntityId,borrowerName);
+            }
+
+            borrower.setBorrowerName(borrowerName.substring(1,borrowerName.length()-1));
+
+            RestResponse<Borrower> restResponse = new RestResponse<>(borrower);
+            responseDataBorrower.add(restResponse);
+        }
+        return responseDataBorrower;
+
     }
+
+
+
 
 
 }
