@@ -6,6 +6,7 @@ import com.example.ald.repository.AldRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,7 @@ public class LenderService {
         List<RestResponse<Borrower>> responseDataList = new ArrayList<>();
 
         for(int i : AllLEIDs){
-            System.out.println("Getting Data for legal entity Id "+i);
+           // System.out.println("Getting Data for legal entity Id "+i);
             List<RestResponse<Borrower>> LEData = getAldFundInfoForLenderLEID(i);
             responseDataList.addAll(LEData);
         }
@@ -36,8 +37,10 @@ public class LenderService {
 
     //Getting data for LenderLegalEntityID from ald
     public List<RestResponse<Borrower>> getAldFundInfoForLenderLEID(Integer legalEntityId){
+        System.out.println("Getting Data for legal entity Id "+legalEntityId+" "+LocalDateTime.now());
 
         List<Borrower> aldFundDataforLenderLE = aldRepository.getAldFundDataforLenderLE(legalEntityId);
+        System.out.println("ALD Data fetched for legal entity Id "+legalEntityId+" "+ LocalDateTime.now());
         List<RestResponse<Borrower>> responseDataBorrower = new ArrayList<>();
 
         for(Borrower borrower: aldFundDataforLenderLE){
@@ -53,8 +56,8 @@ public class LenderService {
 
             borrower.setBorrowerName(borrowerName.substring(1,borrowerName.length()-1));
 
-            RestResponse<Borrower> restResponse = new RestResponse<>(borrower);
-            responseDataBorrower.add(restResponse);
+           // RestResponse<Borrower> restResponse = new RestResponse<>(borrower);
+            responseDataBorrower.add(new RestResponse<>(borrower));
         }
         return responseDataBorrower;
 
