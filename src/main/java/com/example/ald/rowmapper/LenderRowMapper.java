@@ -13,12 +13,11 @@ public class LenderRowMapper implements RowMapper {
     public Lender mapRow(ResultSet rs, int rowNum) throws SQLException {
         Lender lender = new Lender();
         lender.setFund(new Fund());
-
         lender.setLenderLegalEntityId(rs.getInt("LENDER_LEGAL_ENTITY_ID"));
         lender.setLenderTaxId(rs.getString("LENDER_TAX_ID"));
         lender.getFund().setFundTaxID(rs.getString("PL_TAX_ID"));
         lender.getFund().setJurisdiction(rs.getString("PL_COUNTRY_CD"));
-        lender.getFund().setStatus(rs.getString("APPROVAL_STATUS_CD").charAt(0));
+        lender.getFund().setStatus(rs.getString("APPROVAL_STATUS_CD"));
         lender.getFund().setNetAssetValue(rs.getLong("PL_NET_ASSET_VALUE"));
         lender.getFund().setLendableAsset(rs.getLong("PL_LENDABLE_ASSETS"));
         lender.getFund().setFundType(rs.getString("CLASSIFICATION_DESC"));
