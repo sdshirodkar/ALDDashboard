@@ -6,7 +6,6 @@ import com.example.ald.repository.AldRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,32 +34,46 @@ public class LenderService {
 
     }
 
+
     //Getting data for LenderLegalEntityID from ald
     public List<RestResponse<Borrower>> getAldFundInfoForLenderLEID(Integer legalEntityId){
-        System.out.println("Getting Data for legal entity Id "+legalEntityId+" "+LocalDateTime.now());
+        System.out.println("Getting Data for legal entity Id "+legalEntityId);
 
         List<Borrower> aldFundDataforLenderLE = aldRepository.getAldFundDataforLenderLE(legalEntityId);
-        System.out.println("ALD Data fetched for legal entity Id "+legalEntityId+" "+ LocalDateTime.now());
         List<RestResponse<Borrower>> responseDataBorrower = new ArrayList<>();
 
         for(Borrower borrower: aldFundDataforLenderLE){
-            Integer borrowerLegalEntityId  = borrower.getBorrowerLegalEntityId();
-            String borrowerName;
+            //Getting BorrowerName
+            String orgName = getOrgNameForBorrower(borrower.getBorrowerLegalEntityId());
+            borrower.setBorrowerName(orgName);
 
-            if (borrowerOrgMapping.containsKey(borrowerLegalEntityId)){
-                borrowerName = borrowerOrgMapping.get(borrowerLegalEntityId);
-            }else{
-                borrowerName = aldRepository.getOrgNameForLEID(borrowerLegalEntityId);
-                borrowerOrgMapping.put(borrowerLegalEntityId,borrowerName);
-            }
+            //Getting status
+            String status = borrower.getFund().getStatus();
+            borrower.getFund().setStatus(aldService.getStatus(status));
 
-            borrower.setBorrowerName(borrowerName.substring(1,borrowerName.length()-1));
+            //Getting pendingSinceInitiation
+            String pendingSinceIntiation = aldService.getPendingSinceIntiation(
+                    borrower.getFund().getInitiationDate(),
+                    borrower.getFund().getStatus());
+            borrower.getFund().setPendingSinceInitiation(pendingSinceIntiation);
 
-           // RestResponse<Borrower> restResponse = new RestResponse<>(borrower);
+
             responseDataBorrower.add(new RestResponse<>(borrower));
         }
         return responseDataBorrower;
 
+    }
+
+    //Get OrgName using borrower legal entityId
+    private String getOrgNameForBorrower(Integer borrowerLegalEntityId){
+        String borrowerName;
+        if (borrowerOrgMapping.containsKey(borrowerLegalEntityId)){
+            borrowerName = borrowerOrgMapping.get(borrowerLegalEntityId);
+        }else{
+            borrowerName = aldRepository.getOrgNameForLEID(borrowerLegalEntityId);
+            borrowerOrgMapping.put(borrowerLegalEntityId,borrowerName);
+        }
+        return borrowerName.substring(1,borrowerName.length()-1);
     }
 
 

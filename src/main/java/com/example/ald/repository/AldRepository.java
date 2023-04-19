@@ -75,6 +75,14 @@ public class AldRepository {
                 "FROM ALD_PL_APPROVAL a INNER JOIN CLASSIFICATION c ON a.PL_CLASSIFICATION_CD = c.CLASSIFICATION_CD " +
                 "WHERE a.LENDER_LEGAL_ENTITY_ID = "+legalEntityId+" AND a.PL_CLASSIFICATION_CD IS NOT NULL";
 
+//        String sql = "SELECT  o.ORG_NAME, a.BORROWER_LEGAL_ENTITY_ID, a.BORROWER_TAX_ID, a.PL_TAX_ID, a.PL_COUNTRY_CD, a.PL_NET_ASSET_VALUE, a.PL_LENDABLE_ASSETS, \n" +
+//                " a.APPROVAL_STATUS_CD, a.APPROVAL_DT, a.ENTRY_POST_DTTME, c.CLASSIFICATION_DESC\n" +
+//                "FROM ALD_PL_APPROVAL a \n" +
+//                "INNER JOIN CLASSIFICATION c ON a.PL_CLASSIFICATION_CD = c.CLASSIFICATION_CD \n" +
+//                "INNER JOIN LEGAL_ENTITY le ON a.LENDER_LEGAL_ENTITY_ID = le.LEGAL_ENTITY_ID \n" +
+//                "INNER JOIN ORGANIZATION o ON le.ORG_ID = o.ORG_ID \n" +
+//                "WHERE a.LENDER_LEGAL_ENTITY_ID = 51 AND a.PL_CLASSIFICATION_CD IS NOT NULL";
+
         List<Borrower> aldDataforLenderLE = aldJdbcTemplate.query(sql,new BorrowerRowMapper());
         return aldDataforLenderLE;
     }

@@ -40,23 +40,35 @@ public class BorrowerService {
         List<RestResponse<Lender>> responseDataLender = new ArrayList<>();
 
         for(Lender lender: aldFundDataforBorrowerLE){
-            Integer lenderLegalEntityId   = lender.getLenderLegalEntityId();
-            String lenderName;
 
-            if (lenderOrgMapping.containsKey(lenderLegalEntityId)){
-                lenderName = lenderOrgMapping.get(lenderLegalEntityId);
-            }else{
-                lenderName = aldRepository.getOrgNameForLEID(lenderLegalEntityId);
-                lenderOrgMapping.put(lenderLegalEntityId,lenderName);
-            }
+            String lenderName = getOrgNameForLender(lender.getLenderLegalEntityId());
+            lender.setLenderName(lenderName);
 
-            lender.setLenderName(lenderName.substring(1,lenderName.length()-1));
+            //Getting status
+            String status = lender.getFund().getStatus();
+            lender.getFund().setStatus(aldService.getStatus(status));
 
-          //  RestResponse<Lender> restResponse = new RestResponse<>(lender);
+            //Getting pendingSinceInitiation
+            String pendingSinceIntiation = aldService.getPendingSinceIntiation(
+                    lender.getFund().getInitiationDate(),
+                    lender.getFund().getStatus());
+            lender.getFund().setPendingSinceInitiation(pendingSinceIntiation);
+
             responseDataLender.add(new RestResponse<>(lender));
         }
-
        return  responseDataLender;
+    }
+
+    private String getOrgNameForLender(Integer lenderLegalEntityId){
+        String lenderName;
+
+        if (lenderOrgMapping.containsKey(lenderLegalEntityId)){
+            lenderName = lenderOrgMapping.get(lenderLegalEntityId);
+        }else{
+            lenderName = aldRepository.getOrgNameForLEID(lenderLegalEntityId);
+            lenderOrgMapping.put(lenderLegalEntityId,lenderName);
+        }
+        return lenderName.substring(1,lenderName.length()-1);
 
     }
 

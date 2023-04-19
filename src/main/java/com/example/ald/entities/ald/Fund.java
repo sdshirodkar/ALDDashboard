@@ -9,9 +9,19 @@ public class Fund {
     private String Jurisdiction;
     private Long NetAssetValue;
     private Long LendableAsset;
-    private Character Status;
+    private String Status;
     private LocalDateTime ApprovalDate;
     private LocalDateTime InitiationDate;
+
+    public String getPendingSinceInitiation() {
+        return PendingSinceInitiation;
+    }
+
+    public void setPendingSinceInitiation(String pendingSinceInitiation) {
+        PendingSinceInitiation = pendingSinceInitiation;
+    }
+
+    private String PendingSinceInitiation;
 
     public String getFundTaxID() { return FundTaxID; }
 
@@ -51,11 +61,11 @@ public class Fund {
         LendableAsset = lendableAsset;
     }
 
-    public Character getStatus() {
+    public String getStatus() {
         return Status;
     }
 
-    public void setStatus(Character status) {
+    public void setStatus(String status) {
         Status = status;
     }
 
@@ -78,14 +88,15 @@ public class Fund {
     @Override
     public String toString() {
         return "Fund{" +
-                "FundTaxID=" + FundTaxID +
+                "FundTaxID='" + FundTaxID + '\'' +
                 ", FundType='" + FundType + '\'' +
                 ", Jurisdiction='" + Jurisdiction + '\'' +
                 ", NetAssetValue=" + NetAssetValue +
                 ", LendableAsset=" + LendableAsset +
-                ", Status=" + Status +
+                ", Status='" + Status + '\'' +
                 ", ApprovalDate=" + ApprovalDate +
                 ", InitiationDate=" + InitiationDate +
+                ", PendingSinceInitiation='" + PendingSinceInitiation + '\'' +
                 '}';
     }
 }
